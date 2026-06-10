@@ -49,7 +49,7 @@ def split_items(text):
 @st.cache_data(show_spinner=False)
 def load_all_data(grade):
     # シンプルに「quiz」フォルダの中と、現在のフォルダを探す設定にします
-    search_dirs = ["quiz", "."]
+    search_dirs = ["."]
     
     if grade == "1級":
         # 存在する「quiz_level1_data.csv」だけをターゲットにします
