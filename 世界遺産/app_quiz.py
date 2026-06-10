@@ -48,43 +48,43 @@ def split_items(text):
 # --- 2. データのロード環境 ---
 @st.cache_data(show_spinner=False)
 def load_all_data(grade):
-    # シンプルに「quiz」フォルダの中と、現在のフォルダを探す設定にします
-    search_dirs = ["."]
+    # quizフォルダの中と、現在のフォルダの両方の中身を一斉調査する
+    search_dirs = ["quiz", "."]
     
-    if grade == "1級":
-        # 存在する「quiz_level1_data.csv」だけをターゲットにします
-        target_files = ["quiz_level1_data.csv"]
-        
-        for sd in search_dirs:
-            for tf in target_files:
-                p = os.path.join(sd, tf)
-                if os.path.exists(p):
-                    for encoding in ['utf-8-sig', 'utf-8', 'cp932', 'shift_jis']:
-                        try:
-                            df = pd.read_csv(p, encoding=encoding)
-                            df.columns = df.columns.str.strip()
-                            if '地域' not in df.columns:
-                                df['地域'] = "大分類"
-                            return df.dropna(subset=['名称']).reset_index(drop=True)
-                        except:
-                            continue
-    else:
-        # 準1級の処理（1級のバグに邪魔されずに動くようになります）
-        target_files = ["quiz_semi1_data.csv"]
-        for sd in search_dirs:
-            for tf in target_files:
-                p = os.path.join(sd, tf)
-                if os.path.exists(p):
-                    for encoding in ['utf-8-sig', 'utf-8', 'cp932', 'shift_jis']:
-                        try:
-                            df = pd.read_csv(p, encoding=encoding)
-                            df.columns = df.columns.str.strip()
-                            df = df.rename(columns={'エリア': '地域', '時代・王朝': '時代'})
-                            if '地域' not in df.columns:
-                                df['地域'] = "大分類"
-                            return df.dropna(subset=['名称']).reset_index(drop=True)
-                        except:
-                            continue
+    for sd in search_dirs:
+        if os.path.exists(sd):
+            # フォルダ内にあるすべてのファイルを1つずつチェック
+            for f in os.listdir(sd):
+                # ファイル名に「.csv」が含まれているか確認
+                if f.lower().endswith(".csv"):
+                    
+                    # 1級モードの時：ファイル名に「level1」または「1級」が入っていれば中身を見る
+                    if grade == "1級" and ("level1" in f.lower() or "1級" in f):
+                        p = os.path.join(sd, f)
+                        for encoding in ['utf-8-sig', 'utf-8', 'cp932', 'shift_jis']:
+                            try:
+                                df = pd.read_csv(p, encoding=encoding)
+                                df.columns = df.columns.str.strip()
+                                if '地域' not in df.columns:
+                                    df['地域'] = "大分類"
+                                return df.dropna(subset=['名称']).reset_index(drop=True)
+                            except:
+                                continue
+                                
+                    # 準1級モードの時：ファイル名に「semi1」または「準1」が入っていれば中身を見る
+                    elif grade != "1級" and ("semi1" in f.lower() or "準1" in f):
+                        p = os.path.join(sd, f)
+                        for encoding in ['utf-8-sig', 'utf-8', 'cp932', 'shift_jis']:
+                            try:
+                                df = pd.read_csv(p, encoding=encoding)
+                                df.columns = df.columns.str.strip()
+                                df = df.rename(columns={'エリア': '地域', '時代・王朝': '時代'})
+                                if '地域' not in df.columns:
+                                    df['地域'] = "大分類"
+                                return df.dropna(subset=['名称']).reset_index(drop=True)
+                            except:
+                                continue
+                                
     return pd.DataFrame()
 
 # --- 3. ダミー選択肢生成 ---
