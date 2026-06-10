@@ -48,18 +48,15 @@ def split_items(text):
 # --- 2. データのロード環境 ---
 @st.cache_data(show_spinner=False)
 def load_all_data(grade):
-    search_dirs = [".", "quiz"]
+    # シンプルに「quiz」フォルダの中と、現在のフォルダを探す設定にします
+    search_dirs = ["quiz", "."]
     
     if grade == "1級":
+        # 存在する「quiz_level1_data.csv」だけをターゲットにします
         target_files = ["quiz_level1_data.csv"]
-        for sd in search_dirs:
-            if os.path.exists(sd):
-                for f in os.listdir(sd):
-                    if f.endswith(".csv") and "1級" in f:
-                        target_files.append(f)
         
         for sd in search_dirs:
-            for tf in set(target_files):
+            for tf in target_files:
                 p = os.path.join(sd, tf)
                 if os.path.exists(p):
                     for encoding in ['utf-8-sig', 'utf-8', 'cp932', 'shift_jis']:
@@ -72,6 +69,7 @@ def load_all_data(grade):
                         except:
                             continue
     else:
+        # 準1級の処理（1級のバグに邪魔されずに動くようになります）
         target_files = ["quiz_semi1_data.csv"]
         for sd in search_dirs:
             for tf in target_files:
