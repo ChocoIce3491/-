@@ -51,7 +51,7 @@ def load_all_data(grade):
     search_dirs = [".", "quiz"]
     
     if grade == "1級":
-        target_files = ["quiz_level1_data.csv", "世界遺産検定1級.xlsx - 基礎知識.csv"]
+        target_files = ["quiz_level1_data.csv"]
         for sd in search_dirs:
             if os.path.exists(sd):
                 for f in os.listdir(sd):
