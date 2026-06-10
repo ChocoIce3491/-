@@ -48,7 +48,7 @@ def split_items(text):
 # --- 2. データのロード環境 ---
 @st.cache_data(show_spinner=False)
 def load_all_data(grade):
-    search_dirs = ["."]
+    search_dirs = [".", "quiz"]
     
     if grade == "1級":
         target_files = ["quiz_level1_data.csv", "世界遺産検定1級.xlsx - 基礎知識.csv"]
